@@ -19,7 +19,7 @@ any connection on `/chatroom` will be able to message all the users within the g
 
 This endpoint has 2 events we can use,
 - `MessageSend`
-- `MessageReceive`
+- `MessageReceived`
 
 `MessageSend` is initated by client whenever any message has to be sent.
 Subscribe to `MessageReceive` event to get notified of when any message has been sent by other chat room users.
