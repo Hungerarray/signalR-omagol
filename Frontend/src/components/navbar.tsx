@@ -10,10 +10,18 @@ import MenuItem from "@mui/material/MenuItem";
 import MessageIcon from "@mui/icons-material/Message";
 import ReorderIcon from '@mui/icons-material/Reorder';
 import React from "react";
+import { SvgIconProps, SvgIconTypeMap } from "@mui/material";
+import { OndemandVideo } from "@mui/icons-material";
+import { Pages, Routes } from "../Interface/PageEnums";
+import { Link } from "react-router-dom";
 
-const pages = ["ChatRoom", "Oma Chat", "Oma Video"];
+const pages = [Pages.ChatRoom, Pages.OmaChat, Pages.OmaVideo];
 
-export const NavBar = () => {
+interface Props {
+  pageType : Pages,
+}
+
+export const NavBar : React.FC<Props> = ({pageType}) => {
   const [pageMenu, setPageMenu] = React.useState<null | HTMLElement>(
     null
   );
@@ -26,18 +34,24 @@ export const NavBar = () => {
     setPageMenu(null);
   };
 
+  let icon: React.ReactElement<SvgIconProps> | null = null;
+  if(pageType === Pages.ChatRoom || pageType === Pages.OmaChat)
+    icon = <MessageIcon fontSize="large" sx={{ mr: 2 }} />
+  else if (pageType === Pages.OmaVideo)
+    icon = <OndemandVideo fontSize="large" sx={{ mr: 2 }} />
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar>
-          <MessageIcon fontSize="large" sx={{ mr: 2 }}/>
+           {icon}
           <Typography
             variant="h4"
             noWrap
             component="div"
             sx={{ mr: 2, display: { xs: "none", md: "flex" }, flex: 1 }}
           >
-            Chat Room
+            {pageType}
           </Typography>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -63,8 +77,8 @@ export const NavBar = () => {
               onClose={handleClosePageMenu}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleClosePageMenu} selected={page == "ChatRoom"}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page} onClick={handleClosePageMenu} selected={page == pageType} component={Link} to={Routes[page]}>
+                    <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
