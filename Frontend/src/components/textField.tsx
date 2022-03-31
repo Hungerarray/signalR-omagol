@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 
 interface Props {
-  length: number;
+  length: number,
 }
 
 export const useTextField = ({ length } : Props) => {
