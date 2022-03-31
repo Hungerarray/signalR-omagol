@@ -15,5 +15,9 @@ export const useTextField = ({ length } : Props) => {
     setText(curr);
   }
 
-  return [text, handleTextchange] as [string, typeof handleTextchange]; 
+  const clearText = () => {
+    setText("");
+  }
+
+  return [text, handleTextchange, clearText] as [string, typeof handleTextchange, typeof clearText]; 
 };

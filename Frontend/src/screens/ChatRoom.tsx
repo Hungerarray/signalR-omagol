@@ -5,14 +5,65 @@ import SendIcon from "@mui/icons-material/Send";
 import { PubTheme } from "../Infrastrcture/Themes";
 import { useTextField } from "../components/textField";
 import ChatArea from "../components/ChatArea";
-import { chatMoqData, chatMoqData2 } from "../Infrastrcture/ChatRoomData";
+import {
+  chatMoqData2,
+  ChatRoomConnection,
+  ChatMessage,
+} from "../Infrastrcture/ChatRoom";
 
 import { TEXTMESSAGE_LIMIT, USERNAME_LIMIT } from "../Infrastrcture/Constants";
+import { useEffect, useState } from "react";
 
 export const ChatRoom = () => {
-  const [username, handleUsernameChange] = useTextField({length: USERNAME_LIMIT});
-  const [message, handleMessageChange] = useTextField({length: TEXTMESSAGE_LIMIT});
+  const [username, handleUsernameChange] = useTextField({
+    length: USERNAME_LIMIT,
+  });
+  const [message, handleMessageChange, clearMessage] = useTextField({
+    length: TEXTMESSAGE_LIMIT,
+  });
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
+  const connection = ChatRoomConnection;
+
+  useEffect(() => {
+    const setupConnection = async () => {
+      await connection.start();
+      connection.on("MessageReceive", receiveChatMessage);
+    };
+    setupConnection();
+    return () => {
+      const destroyConnection = async () => {
+        await connection.stop();
+      };
+      destroyConnection();
+    };
+  }, []);
+
+  useEffect(() => {
+
+  }, [])
+
+  const sendChatMessage = async (message: ChatMessage) => {
+    await connection.send("MessageSend", message);
+    messages.push(message);
+    setMessages(messages);
+    clearMessage();
+  };
+
+  const receiveChatMessage = (message: ChatMessage) => {
+    messages.push(message);
+    setMessages(messages);
+  };
+
+  const handleSendButton = () => {
+    if (username && message) {
+      sendChatMessage({
+        uuid: connection.connectionId!,
+        user: username,
+        message: message,
+      });
+    }
+  };
   return (
     <>
       <ThemeProvider theme={PubTheme}>
@@ -28,7 +79,7 @@ export const ChatRoom = () => {
                   mt: 3,
                 }}
               >
-                <ChatArea messageList={chatMoqData2}/>
+                <ChatArea messageList={messages} />
               </Box>
             </Grid>
             <Grid item xs={12} md={2}>
@@ -48,7 +99,7 @@ export const ChatRoom = () => {
                 multiline
                 maxRows={2}
                 value={message}
-                onChange={handleMessageChange} 
+                onChange={handleMessageChange}
               />
             </Grid>
             <Grid
@@ -60,7 +111,11 @@ export const ChatRoom = () => {
                 justifyContent: "center",
               }}
             >
-              <IconButton size="large" color="primary">
+              <IconButton
+                size="large"
+                color="primary"
+                onClick={handleSendButton}
+              >
                 <SendIcon fontSize="large" />
               </IconButton>
             </Grid>

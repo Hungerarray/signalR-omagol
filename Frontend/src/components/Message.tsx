@@ -5,8 +5,8 @@ interface Prop {
     message:string,
     color:string
 }
-export const Message:React.FC<Prop> = ({user, message, color='red'}) => {
-    console.log('here');
+
+export const Message : React.FC<Prop> = ({user, message, color='red'}) => {
   return (
     <Box sx={{
         display:"flex",
