@@ -12,7 +12,7 @@ import ReorderIcon from '@mui/icons-material/Reorder';
 import React from "react";
 import { SvgIconProps, SvgIconTypeMap } from "@mui/material";
 import { OndemandVideo } from "@mui/icons-material";
-import { Pages, Routes } from "../Interface/PageEnums";
+import { Pages, Routes } from "../Infrastrcture/PageEnums";
 import { Link } from "react-router-dom";
 
 const pages = [Pages.ChatRoom, Pages.OmaChat, Pages.OmaVideo];
