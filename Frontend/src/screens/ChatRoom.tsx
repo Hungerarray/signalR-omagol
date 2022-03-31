@@ -5,6 +5,8 @@ import SendIcon from "@mui/icons-material/Send";
 import { PubTheme } from "../Infrastrcture/Themes";
 import { ChangeEvent, useState } from "react";
 import { useTextField } from "../components/textField";
+import ChatArea from "../components/ChatArea";
+import { chatMoqData, chatMoqData2 } from "../Infrastrcture/ChatRoomData";
 
 export const ChatRoom = () => {
   const [username, setUsername] = useState<string>("");
@@ -23,16 +25,17 @@ export const ChatRoom = () => {
         <NavBar pageType={Pages.ChatRoom} />
         <Grid container>
           <Grid item xs={0} md={1}></Grid>
-          <Grid item container xs={12} md={10} spacing={1}>
+          <Grid item container xs={12} md={10} spacing={2}>
             <Grid item xs={12}>
               <Box
                 sx={{
-                  backgroundColor: "#000",
                   height: "75vh",
                   flex: 1,
                   mt: 3,
                 }}
-              ></Box>
+              >
+                <ChatArea messageList={chatMoqData2}/>
+              </Box>
             </Grid>
             <Grid item xs={12} md={2}>
               <TextField

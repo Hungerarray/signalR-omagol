@@ -8,7 +8,7 @@ import Container from "@mui/material/Container";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import MessageIcon from "@mui/icons-material/Message";
-import ReorderIcon from '@mui/icons-material/Reorder';
+import ReorderIcon from "@mui/icons-material/Reorder";
 import React from "react";
 import { SvgIconProps, SvgIconTypeMap } from "@mui/material";
 import { OndemandVideo } from "@mui/icons-material";
@@ -18,13 +18,11 @@ import { Link } from "react-router-dom";
 const pages = [Pages.ChatRoom, Pages.OmaChat, Pages.OmaVideo];
 
 interface Props {
-  pageType : Pages,
+  pageType: Pages;
 }
 
-export const NavBar : React.FC<Props> = ({pageType}) => {
-  const [pageMenu, setPageMenu] = React.useState<null | HTMLElement>(
-    null
-  );
+export const NavBar: React.FC<Props> = ({ pageType }) => {
+  const [pageMenu, setPageMenu] = React.useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setPageMenu(event.currentTarget);
@@ -35,16 +33,16 @@ export const NavBar : React.FC<Props> = ({pageType}) => {
   };
 
   let icon: React.ReactElement<SvgIconProps> | null = null;
-  if(pageType === Pages.ChatRoom || pageType === Pages.OmaChat)
-    icon = <MessageIcon fontSize="large" sx={{ mr: 2 }} />
+  if (pageType === Pages.ChatRoom || pageType === Pages.OmaChat)
+    icon = <MessageIcon fontSize="large" sx={{ mr: 2 }} />;
   else if (pageType === Pages.OmaVideo)
-    icon = <OndemandVideo fontSize="large" sx={{ mr: 2 }} />
+    icon = <OndemandVideo fontSize="large" sx={{ mr: 2 }} />;
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar>
-           {icon}
+          {icon}
           <Typography
             variant="h4"
             noWrap
@@ -57,7 +55,7 @@ export const NavBar : React.FC<Props> = ({pageType}) => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open rooms">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <ReorderIcon fontSize="large" sx={{ color: "#fff" }}/>
+                <ReorderIcon fontSize="large" sx={{ color: "#fff" }} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -77,8 +75,14 @@ export const NavBar : React.FC<Props> = ({pageType}) => {
               onClose={handleClosePageMenu}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleClosePageMenu} selected={page == pageType} component={Link} to={Routes[page]}>
-                    <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  key={page}
+                  onClick={handleClosePageMenu}
+                  selected={page == pageType}
+                  component={Link}
+                  to={Routes[page]}
+                >
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
