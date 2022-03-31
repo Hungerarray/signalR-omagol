@@ -1,3 +1,26 @@
+export const chatMoqData2 = [
+  {
+    "uuid": "123",
+    "user": "Kiran Ghimire",
+    "message": "Ma xada vae sake"
+  },
+  {
+    "uuid": "123",
+    "user": "Kiran Ghimire",
+    "message": "Ah yar"
+  },
+  {
+    "uuid": "124",
+    "user": "Regmi C. Mahesh",
+    "message": "last bigryo yar kiran"
+  },
+  {
+    "uuid": "124",
+    "user": "Regmi C. Mahesh",
+    "message": "hait"
+  }, 
+]
+
 export const chatMoqData = [
   {
     "user": "Kiran Ghimire",
@@ -6532,3 +6555,9 @@ export const chatMoqData = [
     "message": "ara ara youtube-kun"
   }
 ];
+
+export interface MessageList {
+  user:string,
+  message:string|null,
+  uuid:string
+}
