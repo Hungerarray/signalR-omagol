@@ -41,3 +41,4 @@ In both cases we send/receive a message object
 ### Potential Plans
 
 - Able to see all users on chatroom.
+- User Avatar
