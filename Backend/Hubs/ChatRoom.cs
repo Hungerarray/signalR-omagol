@@ -25,6 +25,7 @@ public class ChatRoom : Hub<IChatRoom> {
 	}
 
 	public async Task MessageSend(ChatMessage message) {
+		message = message with { uuid = Context.ConnectionId };
 		await Clients.Others.MessageReceive(message);
 	}
 }
