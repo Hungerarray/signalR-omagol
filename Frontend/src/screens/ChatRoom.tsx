@@ -3,19 +3,12 @@ import { NavBar } from "../components/navbar";
 import { Pages } from "../Infrastrcture/PageEnums";
 import SendIcon from "@mui/icons-material/Send";
 import { PubTheme } from "../Infrastrcture/Themes";
-import { ChangeEvent, useState } from "react";
 import { useTextField } from "../components/textField";
+import { TEXTMESSAGE_LIMIT, USERNAME_LIMIT } from "../Infrastrcture/Constants";
 
 export const ChatRoom = () => {
-  const [username, setUsername] = useState<string>("");
-
-  const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const curr = event.target.value;
-    if (curr.length > 10) return;
-    setUsername(event.target.value);
-  };
-
-  const [message, handleMessageChange] = useTextField({length: 200});
+  const [username, handleUsernameChange] = useTextField({length: USERNAME_LIMIT});
+  const [message, handleMessageChange] = useTextField({length: TEXTMESSAGE_LIMIT});
 
   return (
     <>
