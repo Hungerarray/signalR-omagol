@@ -49,7 +49,7 @@ export const NavBar : React.FC<Props> = ({pageType}) => {
             variant="h4"
             noWrap
             component="div"
-            sx={{ mr: 2, display: { xs: "none", md: "flex" }, flex: 1 }}
+            sx={{ mr: 2, display: { md: "flex" }, flex: 1 }}
           >
             {pageType}
           </Typography>
