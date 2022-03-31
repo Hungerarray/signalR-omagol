@@ -11,11 +11,15 @@ We will use signalR technology from ASP.Net Core to allow for bi-directional com
 ---
 ### Current Plans
 
-We will have 2 endpoints
+We will have 3 endpoints
 - `/chatroom`
-- `/omagol`
+- `/omachat`
+- `/omavideo`
 
-any connection on `/chatroom` will be able to message all the users within the group.
+--- 
+
+### Chat Room
+Any connection on `/chatroom` will be able to message all the users within the group.
 
 This endpoint has 2 events we can use,
 - `MessageSend`
@@ -27,8 +31,9 @@ In both cases we send/receive a message object
 #### Structure of message object
 ```json
 {
-  'user': <user-name>,
-  'message': <message-sent>
+  'uuid': '<value overwritten by server>
+  'user': '<user-name>',
+  'message': '<message-sent>'
 }
 ```
 
