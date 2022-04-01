@@ -3,10 +3,11 @@ import { Paper } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import { ChatMessage } from "../Infrastrcture/ChatRoom";
 
-interface Prop {
+interface Props {
   messageList: ChatMessage[];
 }
-const ChatArea: React.FC<Prop> = ({ messageList }) => {
+
+const ChatArea: React.FC<Props> = ({ messageList }) => {
   const [usersColor, setUsersColor] = useState<Record<string, string>>({});
 
   const randomColorGenerator = () => {

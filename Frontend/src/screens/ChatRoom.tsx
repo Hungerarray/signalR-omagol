@@ -39,10 +39,6 @@ export const ChatRoom = () => {
     };
   }, []);
 
-  useEffect(() => {
-
-  }, [])
-
   const sendChatMessage = async (message: ChatMessage) => {
     await connection.send("MessageSend", message);
     messages.push(message);
@@ -52,7 +48,7 @@ export const ChatRoom = () => {
 
   const receiveChatMessage = (message: ChatMessage) => {
     messages.push(message);
-    setMessages(messages);
+    setMessages([...messages]);
   };
 
   const handleSendButton = () => {
