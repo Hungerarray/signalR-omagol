@@ -21,8 +21,8 @@ We will have 2 endpoints
 Any connection on `/chatroom` will be able to message all the users within the group.
 
 This endpoint has 2 events we can use,
-- `MessageSend`
-- `MessageReceived`
+- `MessageSend` [Invoke]
+- `MessageReceived` [Subscribe]
 
 `MessageSend` is initated by client whenever any message has to be sent.
 Subscribe to `MessageReceive` event to get notified of when any message has been sent by other chat room users.
@@ -45,10 +45,17 @@ In both cases we send/receive a message object
 
 Any connection on omagol will be assigned a partner with whom they can converse anonymously with the other person.
 
+Endpoint has events for when client is connected with other person or if the other party disconnects.
+- `UserConnected` [Subscribe]
+- `UserDisconnected` [Invoke]
+
+> NOTE: unless `UserConnected` event is sent any message sent will be ignored.
+
 This endpoint has a chat event api, and video event api.
 Within Chat event api, we have 
-- `MessageSend`
-- `MessageReceive`
+- `MessageSend` [Invoke]
+- `MessageReceive` [Subscribe]
+
 
 > NOTE: `MessageReceive` is not triggered when message is sent by client.
 

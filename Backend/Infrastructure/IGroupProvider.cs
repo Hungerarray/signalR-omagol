@@ -1,12 +1,14 @@
+using Omagol.Infrastructure.Data;
 
 namespace Omagol.Infrastructure;
 
 public interface IGroupProvider {
 
-  public Task<string> this[string connectionId] { get; }
+  public Guid? this[string connectionId] { get; }
 
-  public Task Register(string connectionId);
+  public void Register(string connectionId);
 
-  public Task UnRegister(string connectionId);
+  public void UnRegister(string connectionId);
+	public event EventHandler<Group>? NewConnection;
 
 }
