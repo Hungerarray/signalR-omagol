@@ -41,14 +41,16 @@ export const ChatRoom = () => {
 
   const sendChatMessage = async (message: ChatMessage) => {
     await connection.send("MessageSend", message);
-    messages.push(message);
-    setMessages(messages);
+    setMessages(prevList => {
+      return [...prevList, message];
+    });
     clearMessage();
   };
 
   const receiveChatMessage = (message: ChatMessage) => {
-    messages.push(message);
-    setMessages([...messages]);
+    setMessages(prevList => {
+      return [...prevList, message];
+    });
   };
 
   const handleSendButton = () => {

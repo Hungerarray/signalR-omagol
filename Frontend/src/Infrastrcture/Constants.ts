@@ -1,4 +1,8 @@
 export const USERNAME_LIMIT = 32;
 export const TEXTMESSAGE_LIMIT = 200;
 
-export const app = import.meta.env.VITE_BACKEND ?? "http://localhost:5230"
+
+const test = import.meta.env.VITE_BACKEND;
+console.log(test);
+const temp = "http://localhost:8000";
+export const app = temp ?? "http://localhost:5230"
