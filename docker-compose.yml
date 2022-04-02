@@ -1,17 +1,22 @@
 version: "3.9"
 services:
   backend:
-    build:
-      context: ./Backend
-      dockerfile: Dockerfile
+    image: signalr-omagol_backend
     ports:
       - "8000:80"
-      - "8001:443"
+    networks:
+      - serviceNetwork
   
-  frontend:
-    build:
-      context: ./Frontend
-      dockerfile: Dockerfile
+  viteapp:
+    image: signalr-omagol_viteapp
     ports:
       - "5000:80"
+    env_file:
+      - .env
+    networks:
+      - serviceNetwork
+
+networks:
+  serviceNetwork:
+
 

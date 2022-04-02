@@ -1,13 +1,14 @@
 import { Message } from "./Message";
 import { Paper } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatMessage } from "../Infrastrcture/ChatRoom";
 
-interface Prop {
+interface Props {
   messageList: ChatMessage[];
 }
-const ChatArea: React.FC<Prop> = ({ messageList }) => {
-  const [usersColor, setUsersColor] = useState<Record<string, string>>({});
+
+const ChatArea: React.FC<Props> = ({ messageList }) => {
+  let [usersColor, setUsersColor] = useState<Record<string, string>>({}) ;
 
   const randomColorGenerator = () => {
     return `hsl(${randomNumber(0, 365)},98%, 50%)`;
@@ -18,13 +19,20 @@ const ChatArea: React.FC<Prop> = ({ messageList }) => {
   };
 
   useEffect(() => {
-    let temp: Record<string, string> = {};
-    messageList.forEach((message) => {
-      if (!(message.uuid in usersColor))
-        temp[message?.uuid] = randomColorGenerator();
-      else temp[usersColor[message.uuid]];
-    });
-    setUsersColor(temp);
+    const updateRecord = (prevRecord : typeof usersColor) => {
+      const setUniqueColors = (message : ChatMessage) => {
+        if(message.uuid in prevRecord) 
+          return;
+        
+        prevRecord[message.uuid] = randomColorGenerator();
+      };
+
+      messageList.forEach(setUniqueColors);
+
+      return { ...prevRecord};
+    };
+
+    setUsersColor(updateRecord);
   }, [messageList]);
 
   return (
