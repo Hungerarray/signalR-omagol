@@ -11,10 +11,9 @@ We will use signalR technology from ASP.Net Core to allow for bi-directional com
 ---
 ### Current Plans
 
-We will have 3 endpoints
+We will have 2 endpoints
 - `/chatroom`
-- `/omachat`
-- `/omavideo`
+- `/omagol`
 
 --- 
 
@@ -27,17 +26,42 @@ This endpoint has 2 events we can use,
 
 `MessageSend` is initated by client whenever any message has to be sent.
 Subscribe to `MessageReceive` event to get notified of when any message has been sent by other chat room users.
+
+> NOTE: `MessageReceive` event is triggered for every connection but the sender.
+
 In both cases we send/receive a message object
 #### Structure of message object
 ```json
 {
-  'uuid': '<value overwritten by server>
-  'user': '<user-name>',
-  'message': '<message-sent>'
+  "uuid": "<value overwritten by server>",
+  "user": "<user-name>",
+  "message": "<message-sent>"
 }
 ```
 
 ---
+
+### Omagol
+
+Any connection on omagol will be assigned a partner with whom they can converse anonymously with the other person.
+
+This endpoint has a chat event api, and video event api.
+Within Chat event api, we have 
+- `MessageSend`
+- `MessageReceive`
+
+> NOTE: `MessageReceive` is not triggered when message is sent by client.
+
+#### Structure of message object
+
+```json
+{
+  "message": "<message-sent>"
+}
+```
+
+---
+
 ### Potential Plans
 
 - Able to see all users on chatroom.
