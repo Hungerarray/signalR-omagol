@@ -1,4 +1,5 @@
 using Omagol.Hubs;
+using Omagol.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddCors(options => {
                             .AllowCredentials();
                     });
 });
+builder.Services.AddSingleton<IGroupProvider, GroupProvider>();
 
 var app = builder.Build();
 
