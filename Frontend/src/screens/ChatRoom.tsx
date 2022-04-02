@@ -13,6 +13,7 @@ import {
 
 import { TEXTMESSAGE_LIMIT, USERNAME_LIMIT } from "../Infrastrcture/Constants";
 import { useEffect, useState } from "react";
+import { HubConnectionState } from "@microsoft/signalr";
 
 export const ChatRoom = () => {
   const [username, handleUsernameChange] = useTextField({
@@ -27,10 +28,12 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     const setupConnection = async () => {
+      if(connection.state) 
       await connection.start();
       connection.on("MessageReceive", receiveChatMessage);
     };
     setupConnection();
+
     return () => {
       const destroyConnection = async () => {
         await connection.stop();

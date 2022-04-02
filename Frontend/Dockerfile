@@ -6,6 +6,9 @@ WORKDIR /app
 COPY ./package*.json .
 RUN npm install
 
+ARG VITE_BACKEND
+ENV VITE_BACKEND ${VITE_BACKEND}
+
 COPY . . 
 RUN npx vite build
 
