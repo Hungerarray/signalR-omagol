@@ -28,6 +28,7 @@ sequenceDiagram
   c2 -->> b : Disconnect(implicit)
   b ->> c1 : UserDisconnected
   Note right of c1 : Restart with Start event
+  c1 ->> b : Stop
   c1 -->> b : Disconnect(implicit)
 ```
 Endpoint has events for when client is connected with other person or if the other party disconnects.
@@ -51,3 +52,62 @@ Within Chat event api, we have
   "message": "<message-sent>"
 }
 ```
+
+---
+
+## Structure of objects
+
+The following is the structure of strongly typed Omagol hub class as required by signalR. We have a group provider that is responsible for assigning group to the registered users.
+
+```mermaid
+classDiagram 
+  direction RL
+  class IOmagol {
+    <<interface>>
+    + MessageReceive(Message message)
+    + UserConnected()
+    + UserDisconnected()
+  }
+
+  class Omagol {
+    - IGroupProvider _groupProvider
+    + Start()
+    + Stop()
+    + MessageSend(Message message)
+  }
+  
+  class Message {
+    +string Message
+  }
+
+  class IGroupProvider {
+    + Register(User user)
+    + UnRegister(User user)
+    + event UsersConnected(object _, Group group)
+  }
+
+  class BasicGroupProvider {
+    - List~User~ _availableConnections
+    - Dictionary~Group, User~ _groupMap
+    + Register(User user)
+    + UnRegister(User user)
+    + event UsersConnected(object _, Group group)
+  }
+
+  class Group {
+    + Guid guid
+    + IEnumerable~User~ ConnectionIds
+  }
+  
+  class User {
+    +string ConnectionId
+  }
+
+  BasicGroupProvider .. IGroupProvider
+  Omagol .. IOmagol
+  Omagol o-- IGroupProvider
+  
+
+```
+
+
