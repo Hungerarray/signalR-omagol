@@ -1,3 +1,3 @@
 namespace Omagol.Infrastructure.Data;
 
-public record Group (Guid GroupId, IEnumerable<string> connections);
+public record Group (string GroupId, IEnumerable<User> Users);

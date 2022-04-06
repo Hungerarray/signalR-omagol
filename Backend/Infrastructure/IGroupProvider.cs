@@ -4,11 +4,11 @@ namespace Omagol.Infrastructure;
 
 public interface IGroupProvider {
 
-  public Guid? this[string connectionId] { get; }
+  public string? this[User user] { get; }
 
-  public void Register(string connectionId);
+  public void Register(User user);
 
-  public void UnRegister(string connectionId);
+  public void UnRegister(User user);
 	public event EventHandler<Group>? NewConnection;
 
 }
