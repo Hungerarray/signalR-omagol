@@ -11,9 +11,8 @@ public class Omagol : Hub<IOmagol> {
 	private IGroupProvider _groupProvider { get; init; }
 
 	private void ConnectionMade(object? sender, Group group) {
-		Clients.Group(group.GroupId.ToString()).UserConnected();
+		Clients.Group(group.GroupId).UserConnected();
 	}
-
 
 	public Omagol(ILogger<Omagol> logger, IGroupProvider groupProvider) {
 		_logger = logger;
@@ -25,10 +24,10 @@ public class Omagol : Hub<IOmagol> {
 		var connectionId = Context.ConnectionId;
 		_logger.LogInformation($"{connectionId} connected.");
 
-		_groupProvider.Register(connectionId);
+		User newUser = new User(connectionId);
+		_groupProvider.Register(newUser);
 		await base.OnConnectedAsync();
 	}
-
 
 
 	public override async Task OnDisconnectedAsync(Exception? exception) {
@@ -38,13 +37,16 @@ public class Omagol : Hub<IOmagol> {
 		var connectionId = Context.ConnectionId;
 		_logger.LogInformation($"{connectionId} disconnected.");
 
-		_groupProvider.UnRegister(connectionId);
+		User user = new User(connectionId);
+		_groupProvider.UnRegister(user);
 		await base.OnDisconnectedAsync(exception);
 	}
 
 	public async Task MessageSend(OmaChat message) {
 		var connectionId = Context.ConnectionId;
-		var groupId = _groupProvider[connectionId]?.ToString();
+
+		User currUser = new User(connectionId);
+		string? groupId = _groupProvider[currUser];
 		if(groupId is null) {
 			return ;
 		}
