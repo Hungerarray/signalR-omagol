@@ -16,4 +16,5 @@ We will have 2 endpoints
 ### Potential Plans
 
 - Able to see all users on chatroom.
-- User Avatar
+- User Avatar:
+- Add connection by categories in omagol

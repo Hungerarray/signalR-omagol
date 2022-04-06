@@ -87,16 +87,17 @@ classDiagram
   }
 
   class BasicGroupProvider {
-    - List~User~ _availableConnections
-    - Dictionary~Group, User~ _groupMap
+    - Queue~User~ _availableConnections
+    - Dictionary~User, Group~ _groupMap
+    + operator[User user]
     + Register(User user)
     + UnRegister(User user)
     + event UsersConnected(object _, Group group)
   }
 
   class Group {
-    + Guid guid
-    + IEnumerable~User~ ConnectionIds
+    + string GroupId
+    + IEnumerable~User~ Users
   }
   
   class User {
