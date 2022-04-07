@@ -5,7 +5,7 @@ public class GroupProvider : IGroupProvider {
 
 	private ILogger<GroupProvider> _logger { get; init; }
 
-	private Queue<User> _availableConnections { get; } = new Queue<User>();
+	private Queue<User> _availableConnections { get; set; } = new Queue<User>();
 
 	private Dictionary<User, Group> _groupMap { get; } = new Dictionary<User, Group>();
 
@@ -40,10 +40,16 @@ public class GroupProvider : IGroupProvider {
 	}
 
 	public void UnRegister(User user) {
-		Group group = _groupMap[user];
-
-		foreach(User usr in group.Users) {
-			_groupMap.Remove(usr);
+		_groupMap.TryGetValue(user, out Group? group);
+		if (group is not null) {
+			foreach (User usr in group.Users) {
+				_groupMap.Remove(usr);
+			}
+			return;
 		}
+
+		var filteredQueue = _availableConnections
+													.Where(usr => usr.ConnectionId != user.ConnectionId);
+		_availableConnections = new Queue<User>(filteredQueue);
 	}
 }
