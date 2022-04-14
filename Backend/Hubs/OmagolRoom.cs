@@ -5,16 +5,16 @@ using Omagol.Infrastructure.Data;
 
 namespace Omagol.Hubs;
 
-public class Omagol : Hub<IOmagol> {
+public class OmagolRoom : Hub<IOmagol> {
 
-	private ILogger<Omagol> _logger { get; init; }
+	private ILogger<OmagolRoom> _logger { get; init; }
 	private IGroupProvider _groupProvider { get; init; }
 
 	private void ConnectionMade(object? sender, Group group) {
 		Clients.Group(group.GroupId).UserConnected();
 	}
 
-	public Omagol(ILogger<Omagol> logger, IGroupProvider groupProvider) {
+	public OmagolRoom(ILogger<OmagolRoom> logger, IGroupProvider groupProvider) {
 		_logger = logger;
 		_groupProvider = groupProvider;
 		_groupProvider.NewConnection += ConnectionMade;
