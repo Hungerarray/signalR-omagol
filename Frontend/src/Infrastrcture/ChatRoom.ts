@@ -26,7 +26,7 @@ export const chatMoqData2 = [
 
 export interface ChatMessage {
   user:string,
-  message:string|null,
+  message:string,
   uuid:string
 }
 

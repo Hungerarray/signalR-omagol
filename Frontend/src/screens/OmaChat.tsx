@@ -12,11 +12,84 @@ import { OmaTheme } from "../Infrastrcture/Themes";
 import SendIcon from "@mui/icons-material/Send";
 import { useTextField } from "../components/textField";
 import { TEXTMESSAGE_LIMIT } from "../Infrastrcture/Constants";
+import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupConnection, start, subscribe } from "../Infrastrcture/Omagol";
+import { KeyboardEventHandler, useEffect, useState } from "react";
+import ChatArea from "../components/ChatArea";
+import { ChatMessage } from "../Infrastrcture/ChatRoom";
+
+enum RoomState {
+  Initial,
+  Waiting,
+  Connected,
+  Disconnected
+};
 
 export const OmaChat = () => {
-  const [message, handleMessageChange] = useTextField({
+  const [message, handleMessageChange, clearMessage] = useTextField({
     length: TEXTMESSAGE_LIMIT,
   });
+  const [roomState, setRoomState] = useState<RoomState>(RoomState.Waiting);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const connection = OmagolConnection;
+
+  const userConnectedEventHandler = () => {
+    console.log("user connected");
+    setRoomState(RoomState.Connected);
+  }
+
+  const userDisconnectedEventHandler = () => {
+    console.log("User Disconnected");
+    setRoomState(RoomState.Disconnected);
+  }
+
+  const handleEnterEvent: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key === "Enter" && event.shiftKey === false) {
+      handleSendEvent();
+      event.preventDefault();
+    }
+  }
+
+  const handleSendEvent = async () => {
+    if (message && roomState === RoomState.Connected) {
+      const msg = {
+        user: "You",
+        message: message,
+        uuid: connection.connectionId!
+      };
+      await sendMessage(msg);
+      setMessages(prevList => {
+        return [...prevList, msg];
+      });
+      clearMessage();
+    }
+  }
+
+  const handleReceiveEvent = (message: OmagolMessage) => {
+    const msg = {
+      user: "Stranger",
+      message: message.message,
+      uuid: connection.connectionId!
+    };
+
+    setMessages(prevList => {
+      return [...prevList, msg];
+    });
+  }
+
+  useEffect(() => {
+    setupConnection()
+      .then(() => {
+        subscribe("UserConnected", userConnectedEventHandler);
+        subscribe("UserDisconnected", userDisconnectedEventHandler);
+        subscribe("MessageReceive", handleReceiveEvent);
+        start();
+      });
+
+    return () => {
+      destroyConnection();
+    }
+  }, [])
 
   return (
     <>
@@ -28,12 +101,13 @@ export const OmaChat = () => {
             <Grid item xs={12}>
               <Box
                 sx={{
-                  backgroundColor: "#000",
                   height: "75vh",
                   flex: 1,
                   mt: 3,
                 }}
-              ></Box>
+              >
+                <ChatArea messageList={messages} />
+              </Box>
             </Grid>
             <Grid
               item
@@ -56,6 +130,7 @@ export const OmaChat = () => {
                 maxRows={2}
                 value={message}
                 onChange={handleMessageChange}
+                onKeyDownCapture={handleEnterEvent}
               />
             </Grid>
             <Grid

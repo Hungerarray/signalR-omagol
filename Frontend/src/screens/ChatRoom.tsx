@@ -6,7 +6,6 @@ import { PubTheme } from "../Infrastrcture/Themes";
 import { useTextField } from "../components/textField";
 import ChatArea from "../components/ChatArea";
 import {
-  chatMoqData2,
   ChatRoomConnection,
   ChatMessage,
 } from "../Infrastrcture/ChatRoom";
@@ -27,8 +26,8 @@ export const ChatRoom = () => {
 
   const makeConnection = () => {
     const setupConnection = async () => {
-      if(connection.state) 
-      await connection.start();
+      if (connection.state)
+        await connection.start();
       connection.on("MessageReceive", receiveChatMessage);
     };
     setupConnection();
@@ -56,8 +55,8 @@ export const ChatRoom = () => {
     });
   };
 
-  const handleEnterEvent :KeyboardEventHandler<HTMLDivElement> = (event) => { 
-    if(event.key === "Enter" && event.shiftKey === false) {
+  const handleEnterEvent: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key === "Enter" && event.shiftKey === false) {
       handleSendButton();
       event.preventDefault();
     }

@@ -50,8 +50,6 @@ public class GroupProvider : IGroupProvider {
 	public async Task UnRegister(User user) {
 		_groupMap.TryGetValue(user, out Group? group);
 		if (group is not null) {
-			await _hubContext.Clients.GroupExcept(group.GroupId, user.ConnectionId).UserDisconnected();
-
 			foreach (User usr in group.Users) {
 				_groupMap.Remove(usr);
 				await _hubContext.Groups.RemoveFromGroupAsync(usr.ConnectionId, group.GroupId);
