@@ -24,7 +24,7 @@ app.UseRouting();
 // add signalR endpoint
 app.UseEndpoints(endpoints => {
   endpoints.MapHub<ChatRoom>("/chatroom");
-  endpoint.MapHub<Omagol>("/omagol");
+  endpoints.MapHub<OmagolRoom>("/omagol");
 });
 
 app.MapGet("/", () => "Hello World!");
