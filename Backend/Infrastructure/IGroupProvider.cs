@@ -9,6 +9,5 @@ public interface IGroupProvider {
   public void Register(User user);
 
   public void UnRegister(User user);
-	public event EventHandler<Group>? NewConnection;
 
 }

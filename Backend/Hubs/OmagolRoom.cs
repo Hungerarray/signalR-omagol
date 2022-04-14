@@ -10,14 +10,9 @@ public class OmagolRoom : Hub<IOmagol> {
 	private ILogger<OmagolRoom> _logger { get; init; }
 	private IGroupProvider _groupProvider { get; init; }
 
-	private void ConnectionMade(object? sender, Group group) {
-		Clients.Group(group.GroupId).UserConnected();
-	}
-
 	public OmagolRoom(ILogger<OmagolRoom> logger, IGroupProvider groupProvider) {
 		_logger = logger;
 		_groupProvider = groupProvider;
-		_groupProvider.NewConnection += ConnectionMade;
 	}
 
 	public override async Task OnConnectedAsync() {
