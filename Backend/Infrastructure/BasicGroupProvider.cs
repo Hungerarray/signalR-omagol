@@ -25,7 +25,7 @@ public class GroupProvider : IGroupProvider {
 		}
 	}
 
-	public void Register(User user) {
+	public async Task Register(User user) {
 		if (_availableConnections.Count == 0) {
 			_availableConnections.Enqueue(user);
 			return;
@@ -36,16 +36,25 @@ public class GroupProvider : IGroupProvider {
 		string newGroupId = Guid.NewGuid().ToString();
 
 		Group group = new Group(newGroupId, users);
-		_groupMap.Add(availableUser, group);
-		_groupMap.Add(user, group);
-		_hubContext.Clients.Group(group.GroupId).UserConnected();
+		await CreateGroup(group);
+		await _hubContext.Clients.Group(group.GroupId).UserConnected();
 	}
 
-	public void UnRegister(User user) {
+	private async Task CreateGroup(Group group) {
+		foreach (User usr in group.Users) {
+			_groupMap.Add(usr, group);
+			await _hubContext.Groups.AddToGroupAsync(usr.ConnectionId, group.GroupId);
+		}
+	}
+
+	public async Task UnRegister(User user) {
 		_groupMap.TryGetValue(user, out Group? group);
 		if (group is not null) {
+			await _hubContext.Clients.GroupExcept(group.GroupId, user.ConnectionId).UserDisconnected();
+
 			foreach (User usr in group.Users) {
 				_groupMap.Remove(usr);
+				await _hubContext.Groups.RemoveFromGroupAsync(usr.ConnectionId, group.GroupId);
 			}
 			return;
 		}
