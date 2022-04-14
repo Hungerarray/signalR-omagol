@@ -35,8 +35,8 @@ public class Omagol : Hub<IOmagol> {
 
 		User currUser = new User(connectionId);
 		string? groupId = _groupProvider[currUser];
-		if(groupId is not null) {
-			await Clients.Group(groupId).UserDisconnected();
+		if (groupId is not null) {
+			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
 		}
 		_groupProvider.UnRegister(currUser);
 
@@ -48,8 +48,8 @@ public class Omagol : Hub<IOmagol> {
 
 		User currUser = new User(connectionId);
 		string? groupId = _groupProvider[currUser];
-		if(groupId is null) {
-			return ;
+		if (groupId is null) {
+			return;
 		}
 		await Clients.OthersInGroup(groupId).MessageReceive(message);
 	}
@@ -66,8 +66,8 @@ public class Omagol : Hub<IOmagol> {
 
 		User currUser = new User(connectionId);
 		string? groupId = _groupProvider[currUser];
-		if(groupId is not null) {
-			Clients.Group(groupId).UserDisconnected();
+		if (groupId is not null) {
+			Clients.GroupExcept(groupId, connectionId).UserDisconnected();
 		}
 		_groupProvider.UnRegister(currUser);
 	}
