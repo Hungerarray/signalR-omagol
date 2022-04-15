@@ -15,8 +15,9 @@ import { TEXTMESSAGE_LIMIT } from "../Infrastrcture/Constants";
 import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupConnection, start, subscribe, stop } from "../Infrastrcture/Omagol";
 import { KeyboardEventHandler, useEffect, useState } from "react";
 import ChatArea from "../components/ChatArea";
-import { ChatMessage } from "../Infrastrcture/ChatRoom";
 import { Loading } from "../components/Loading";
+import { ChatMessage } from "../Infrastrcture/Types";
+import { MessageType } from "../components/Message";
 
 enum RoomState {
   Initial,
@@ -34,14 +35,31 @@ export const OmaChat = () => {
 
   const connection = OmagolConnection;
 
+  const reportInfo = (message :string) => {
+    const info : ChatMessage = {
+      type: MessageType.Info,
+      user: "Internal",
+      message: message,
+      uuid: ""
+    };
+
+    setMessages(prevList => {
+      return [ ... prevList, info];
+    })
+  }
+
   const userConnectedEventHandler = () => {
     console.log("user connected");
     setRoomState(RoomState.Connected);
+
+    reportInfo("User has Connected");
   }
 
   const userDisconnectedEventHandler = () => {
     console.log("User Disconnected");
     setRoomState(RoomState.Disconnected);
+    
+    reportInfo("User has Disconnected");
   }
 
   const handleEnterEvent: KeyboardEventHandler<HTMLDivElement> = (event) => {
@@ -77,6 +95,11 @@ export const OmaChat = () => {
       return [...prevList, msg];
     });
   }
+  
+  const begin = () => {
+    start();
+    setMessages([]);
+  }
 
   useEffect(() => {
     setupConnection()
@@ -84,7 +107,7 @@ export const OmaChat = () => {
         subscribe("UserConnected", userConnectedEventHandler);
         subscribe("UserDisconnected", userDisconnectedEventHandler);
         subscribe("MessageReceive", handleReceiveEvent);
-        start();
+        begin();
         setRoomState(RoomState.Waiting);
       });
 
@@ -96,7 +119,7 @@ export const OmaChat = () => {
   const nextButtonHandler = () => {
     console.log("Next button Pressed");
     stop();
-    start();
+    begin();
     setRoomState(RoomState.Waiting);
   }
 

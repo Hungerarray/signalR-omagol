@@ -7,11 +7,11 @@ import { useTextField } from "../components/textField";
 import ChatArea from "../components/ChatArea";
 import {
   ChatRoomConnection,
-  ChatMessage,
 } from "../Infrastrcture/ChatRoom";
 
 import { TEXTMESSAGE_LIMIT, USERNAME_LIMIT } from "../Infrastrcture/Constants";
 import { KeyboardEventHandler, useEffect, useState } from "react";
+import { ChatMessage } from "../Infrastrcture/Types";
 
 export const ChatRoom = () => {
   const [username, handleUsernameChange] = useTextField({

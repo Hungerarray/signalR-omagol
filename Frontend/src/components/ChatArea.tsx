@@ -1,7 +1,7 @@
 import { Message } from "./Message";
 import { Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { ChatMessage } from "../Infrastrcture/ChatRoom";
+import { ChatMessage } from "../Infrastrcture/Types";
 
 interface Props {
   messageList: ChatMessage[];
@@ -47,6 +47,7 @@ const ChatArea: React.FC<Props> = ({ messageList }) => {
     >
       {messageList.map((eachMessage, index) => (
         <Message
+          type={eachMessage.type}
           message={eachMessage.message!}
           user={eachMessage.user}
           color={usersColor[eachMessage.uuid]}
