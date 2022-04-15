@@ -37,5 +37,6 @@ export const sendMessage = async (message: OmagolMessage) => {
 }
 
 export const stop = async () => {
+  console.log("Stop Invoked");
   await OmagolConnection.invoke("Stop");
 }

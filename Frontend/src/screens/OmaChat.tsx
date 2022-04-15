@@ -12,7 +12,7 @@ import { OmaTheme } from "../Infrastrcture/Themes";
 import SendIcon from "@mui/icons-material/Send";
 import { useTextField } from "../components/textField";
 import { TEXTMESSAGE_LIMIT } from "../Infrastrcture/Constants";
-import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupConnection, start, subscribe } from "../Infrastrcture/Omagol";
+import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupConnection, start, subscribe, stop } from "../Infrastrcture/Omagol";
 import { KeyboardEventHandler, useEffect, useState } from "react";
 import ChatArea from "../components/ChatArea";
 import { ChatMessage } from "../Infrastrcture/ChatRoom";
@@ -28,7 +28,7 @@ export const OmaChat = () => {
   const [message, handleMessageChange, clearMessage] = useTextField({
     length: TEXTMESSAGE_LIMIT,
   });
-  const [roomState, setRoomState] = useState<RoomState>(RoomState.Waiting);
+  const [roomState, setRoomState] = useState<RoomState>(RoomState.Initial);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const connection = OmagolConnection;
@@ -84,12 +84,20 @@ export const OmaChat = () => {
         subscribe("UserDisconnected", userDisconnectedEventHandler);
         subscribe("MessageReceive", handleReceiveEvent);
         start();
+        setRoomState(RoomState.Waiting);
       });
 
     return () => {
       destroyConnection();
     }
   }, [])
+
+  const nextButtonHandler = () => {
+    console.log("Next button Pressed");
+    stop();
+    start();
+    setRoomState(RoomState.Waiting);
+  }
 
   return (
     <>
@@ -119,7 +127,7 @@ export const OmaChat = () => {
                 alignItems: "center",
               }}
             >
-              <Button variant="contained">Next</Button>
+              <Button variant="contained" onClick={nextButtonHandler}>Next</Button>
             </Grid>
             <Grid item xs={12} sm={10}>
               <TextField
