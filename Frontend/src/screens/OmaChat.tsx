@@ -16,6 +16,7 @@ import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupC
 import { KeyboardEventHandler, useEffect, useState } from "react";
 import ChatArea from "../components/ChatArea";
 import { ChatMessage } from "../Infrastrcture/ChatRoom";
+import { Loading } from "../components/Loading";
 
 enum RoomState {
   Initial,
@@ -99,6 +100,18 @@ export const OmaChat = () => {
     setRoomState(RoomState.Waiting);
   }
 
+  let content = <Loading />;
+  switch (roomState) {
+    case RoomState.Initial:
+    case RoomState.Waiting:
+      content = <Loading />
+      break;
+    case RoomState.Connected:
+    case RoomState.Disconnected:
+      content = <ChatArea messageList={messages} />
+      break;
+  }
+
   return (
     <>
       <ThemeProvider theme={OmaTheme}>
@@ -114,7 +127,7 @@ export const OmaChat = () => {
                   mt: 3,
                 }}
               >
-                <ChatArea messageList={messages} />
+                {content}
               </Box>
             </Grid>
             <Grid
