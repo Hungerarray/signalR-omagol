@@ -24,12 +24,6 @@ export const chatMoqData2 = [
   }, 
 ]
 
-export interface ChatMessage {
-  user:string,
-  message:string|null,
-  uuid:string
-}
-
 export const ChatRoomConnection = new signalR.HubConnectionBuilder()
                                               .withUrl(`${app}/chatroom`)
                                               .build();

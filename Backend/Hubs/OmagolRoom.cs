@@ -10,14 +10,9 @@ public class OmagolRoom : Hub<IOmagol> {
 	private ILogger<OmagolRoom> _logger { get; init; }
 	private IGroupProvider _groupProvider { get; init; }
 
-	private void ConnectionMade(object? sender, Group group) {
-		Clients.Group(group.GroupId).UserConnected();
-	}
-
 	public OmagolRoom(ILogger<OmagolRoom> logger, IGroupProvider groupProvider) {
 		_logger = logger;
 		_groupProvider = groupProvider;
-		_groupProvider.NewConnection += ConnectionMade;
 	}
 
 	public override async Task OnConnectedAsync() {
@@ -38,7 +33,7 @@ public class OmagolRoom : Hub<IOmagol> {
 		if (groupId is not null) {
 			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
 		}
-		_groupProvider.UnRegister(currUser);
+		await _groupProvider.UnRegister(currUser);
 
 		await base.OnDisconnectedAsync(exception);
 	}
@@ -54,21 +49,21 @@ public class OmagolRoom : Hub<IOmagol> {
 		await Clients.OthersInGroup(groupId).MessageReceive(message);
 	}
 
-	public void Start() {
+	public async Task Start() {
 		string connectionId = Context.ConnectionId;
 
 		User currUser = new User(connectionId);
-		_groupProvider.Register(currUser);
+		await _groupProvider.Register(currUser);
 	}
 
-	public void Stop() {
+	public async Task Stop() {
 		string connectionId = Context.ConnectionId;
 
 		User currUser = new User(connectionId);
 		string? groupId = _groupProvider[currUser];
 		if (groupId is not null) {
-			Clients.GroupExcept(groupId, connectionId).UserDisconnected();
+			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
 		}
-		_groupProvider.UnRegister(currUser);
+		await _groupProvider.UnRegister(currUser);
 	}
 }

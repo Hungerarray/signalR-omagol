@@ -6,9 +6,8 @@ public interface IGroupProvider {
 
   public string? this[User user] { get; }
 
-  public void Register(User user);
+  public Task Register(User user);
 
-  public void UnRegister(User user);
-	public event EventHandler<Group>? NewConnection;
+  public Task UnRegister(User user);
 
 }

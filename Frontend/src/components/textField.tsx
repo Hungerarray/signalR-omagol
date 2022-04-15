@@ -4,6 +4,7 @@ interface Props {
   length: number,
 }
 
+
 export const useTextField = ({ length } : Props) => {
   const [text, setText] = useState<string>("");
 

@@ -6,14 +6,12 @@ import { PubTheme } from "../Infrastrcture/Themes";
 import { useTextField } from "../components/textField";
 import ChatArea from "../components/ChatArea";
 import {
-  chatMoqData2,
   ChatRoomConnection,
-  ChatMessage,
 } from "../Infrastrcture/ChatRoom";
 
 import { TEXTMESSAGE_LIMIT, USERNAME_LIMIT } from "../Infrastrcture/Constants";
-import { useEffect, useState } from "react";
-import { HubConnectionState } from "@microsoft/signalr";
+import { KeyboardEventHandler, useEffect, useState } from "react";
+import { ChatMessage } from "../Infrastrcture/Types";
 
 export const ChatRoom = () => {
   const [username, handleUsernameChange] = useTextField({
@@ -26,10 +24,10 @@ export const ChatRoom = () => {
 
   const connection = ChatRoomConnection;
 
-  useEffect(() => {
+  const makeConnection = () => {
     const setupConnection = async () => {
-      if(connection.state) 
-      await connection.start();
+      if (connection.state)
+        await connection.start();
       connection.on("MessageReceive", receiveChatMessage);
     };
     setupConnection();
@@ -40,7 +38,8 @@ export const ChatRoom = () => {
       };
       destroyConnection();
     };
-  }, []);
+  }
+  useEffect(makeConnection, []);
 
   const sendChatMessage = async (message: ChatMessage) => {
     await connection.send("MessageSend", message);
@@ -55,6 +54,13 @@ export const ChatRoom = () => {
       return [...prevList, message];
     });
   };
+
+  const handleEnterEvent: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key === "Enter" && event.shiftKey === false) {
+      handleSendButton();
+      event.preventDefault();
+    }
+  }
 
   const handleSendButton = () => {
     if (username && message) {
@@ -101,6 +107,7 @@ export const ChatRoom = () => {
                 maxRows={2}
                 value={message}
                 onChange={handleMessageChange}
+                onKeyDownCapture={handleEnterEvent}
               />
             </Grid>
             <Grid

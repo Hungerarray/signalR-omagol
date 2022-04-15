@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.SignalR;
+using Omagol.Hubs;
 using Omagol.Infrastructure.Data;
 namespace Omagol.Infrastructure;
 
@@ -8,9 +10,11 @@ public class GroupProvider : IGroupProvider {
 	private Queue<User> _availableConnections { get; set; } = new Queue<User>();
 
 	private Dictionary<User, Group> _groupMap { get; } = new Dictionary<User, Group>();
+	private IHubContext<OmagolRoom, IOmagol> _hubContext { get; }
 
-	public GroupProvider(ILogger<GroupProvider> logger) {
+	public GroupProvider(IHubContext<OmagolRoom, IOmagol> hubContext, ILogger<GroupProvider> logger) {
 		_logger = logger;
+		_hubContext = hubContext;
 	}
 
 	public string? this[User user] {
@@ -21,9 +25,7 @@ public class GroupProvider : IGroupProvider {
 		}
 	}
 
-	public event EventHandler<Group>? NewConnection;
-
-	public void Register(User user) {
+	public async Task Register(User user) {
 		if (_availableConnections.Count == 0) {
 			_availableConnections.Enqueue(user);
 			return;
@@ -34,16 +36,23 @@ public class GroupProvider : IGroupProvider {
 		string newGroupId = Guid.NewGuid().ToString();
 
 		Group group = new Group(newGroupId, users);
-		_groupMap.Add(availableUser, group);
-		_groupMap.Add(user, group);
-		NewConnection?.Invoke(this, group);
+		await CreateGroup(group);
+		await _hubContext.Clients.Group(group.GroupId).UserConnected();
 	}
 
-	public void UnRegister(User user) {
+	private async Task CreateGroup(Group group) {
+		foreach (User usr in group.Users) {
+			_groupMap.Add(usr, group);
+			await _hubContext.Groups.AddToGroupAsync(usr.ConnectionId, group.GroupId);
+		}
+	}
+
+	public async Task UnRegister(User user) {
 		_groupMap.TryGetValue(user, out Group? group);
 		if (group is not null) {
 			foreach (User usr in group.Users) {
 				_groupMap.Remove(usr);
+				await _hubContext.Groups.RemoveFromGroupAsync(usr.ConnectionId, group.GroupId);
 			}
 			return;
 		}
