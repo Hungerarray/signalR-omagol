@@ -15,7 +15,8 @@ import { OndemandVideo } from "@mui/icons-material";
 import { Pages, Routes } from "../Infrastrcture/PageEnums";
 import { Link } from "react-router-dom";
 
-const pages = [Pages.ChatRoom, Pages.OmaChat, Pages.OmaVideo];
+// const pages = [Pages.ChatRoom, Pages.OmaChat, Pages.OmaVideo];
+const pages = [Pages.ChatRoom, Pages.OmaChat];
 
 interface Props {
   pageType: Pages;
