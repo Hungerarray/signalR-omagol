@@ -1,3 +1,8 @@
 namespace Omagol.Infrastructure.Data;
 
-public record User(string ConnectionId);
+public enum UserType {
+  Chat,
+  Video
+}
+
+public record User(string ConnectionId, UserType type);

@@ -15,6 +15,7 @@ builder.Services.AddCors(options => {
                     });
 });
 builder.Services.AddSingleton<IGroupProvider, GroupProvider>();
+builder.Services.AddSingleton<IUserStore, UserStore>();
 
 var app = builder.Build();
 

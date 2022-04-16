@@ -1,3 +1,4 @@
+using System.Security;
 using Microsoft.AspNetCore.SignalR;
 using Omagol.Data;
 using Omagol.Infrastructure;
@@ -10,9 +11,12 @@ public class OmagolRoom : Hub<IOmagol> {
 	private ILogger<OmagolRoom> _logger { get; init; }
 	private IGroupProvider _groupProvider { get; init; }
 
-	public OmagolRoom(ILogger<OmagolRoom> logger, IGroupProvider groupProvider) {
+	private IUserStore _userStore { get; init; }
+
+	public OmagolRoom(ILogger<OmagolRoom> logger, IGroupProvider groupProvider, IUserStore userStore) {
 		_logger = logger;
 		_groupProvider = groupProvider;
+		_userStore = userStore;
 	}
 
 	public override async Task OnConnectedAsync() {
@@ -28,7 +32,8 @@ public class OmagolRoom : Hub<IOmagol> {
 		var connectionId = Context.ConnectionId;
 		_logger.LogInformation($"{connectionId} disconnected.");
 
-		User currUser = new User(connectionId);
+		User currUser = _userStore[connectionId];
+		_userStore.Remove(connectionId);
 		string? groupId = _groupProvider[currUser];
 		if (groupId is not null) {
 			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
@@ -41,7 +46,7 @@ public class OmagolRoom : Hub<IOmagol> {
 	public async Task MessageSend(OmaChat message) {
 		var connectionId = Context.ConnectionId;
 
-		User currUser = new User(connectionId);
+		User currUser = _userStore[connectionId];
 		string? groupId = _groupProvider[currUser];
 		if (groupId is null) {
 			return;
@@ -49,17 +54,18 @@ public class OmagolRoom : Hub<IOmagol> {
 		await Clients.OthersInGroup(groupId).MessageReceive(message);
 	}
 
-	public async Task Start() {
+	public async Task Start(UserInfo info) {
 		string connectionId = Context.ConnectionId;
 
-		User currUser = new User(connectionId);
+		User currUser = new User(connectionId, info.Video ? UserType.Video : UserType.Chat);
 		await _groupProvider.Register(currUser);
 	}
 
 	public async Task Stop() {
 		string connectionId = Context.ConnectionId;
 
-		User currUser = new User(connectionId);
+		User currUser = _userStore[connectionId];
+		_userStore.Remove(connectionId);
 		string? groupId = _groupProvider[currUser];
 		if (groupId is not null) {
 			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
