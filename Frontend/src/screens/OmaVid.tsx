@@ -95,7 +95,9 @@ export const OmaVid = () => {
   };
 
   const begin = () => {
-    start();
+    start({
+      video: true
+    });
     setMessages([]);
   };
 

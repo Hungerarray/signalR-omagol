@@ -7,6 +7,10 @@ export interface OmagolMessage {
   message: string,
 };
 
+export interface UserInfo {
+  video  :boolean
+};
+
 export const OmagolConnection = new signalR.HubConnectionBuilder()
   .withUrl(`${app}/omagol`)
   .build();
@@ -29,9 +33,9 @@ export const subscribe = (methodName: string, callback: (...arg: any[]) => void)
   OmagolConnection.on(methodName, callback);
 }
 
-export const start = async () => {
+export const start = async (info :UserInfo) => {
   console.log("Start event started");
-  await OmagolConnection.invoke("Start");
+  await OmagolConnection.invoke("Start", info);
 }
 
 export const sendMessage = async (message: OmagolMessage) => {
