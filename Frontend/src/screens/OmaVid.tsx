@@ -1,11 +1,122 @@
 import { Box, Button, Grid, TextField, ThemeProvider } from "@mui/material"
-import { useEffect } from "react"
+import { KeyboardEventHandler, useEffect, useState } from "react"
+import ChatArea from "../components/ChatArea"
+import { Loading } from "../components/Loading"
+import { MessageType } from "../components/Message"
 import { NavBar } from "../components/navbar"
+import { useTextField } from "../components/textField"
+import { TEXTMESSAGE_LIMIT } from "../Infrastrcture/Constants"
+import { destroyConnection, OmagolConnection, OmagolMessage, sendMessage, setupConnection, start, subscribe, stop } from "../Infrastrcture/Omagol"
 import { Pages } from "../Infrastrcture/PageEnums"
 import { OmaTheme } from "../Infrastrcture/Themes"
+import { ChatMessage } from "../Infrastrcture/Types"
+import { RoomState } from "./OmaChat"
 
 
 export const OmaVid = () => {
+  useEffect(() => {
+    setupConnection()
+      .then(() => {
+        subscribe("UserConnected", userConnectedEventHandler);
+        subscribe("UserDisconnected", userDisconnectedEventHandler);
+        subscribe("MessageReceive", handleReceiveEvent);
+        begin();
+        setRoomState(RoomState.Waiting);
+      });
+
+    return () => {
+      destroyConnection();
+    };
+  }, []);
+
+  const [message, handleMessageChange, clearMessage] = useTextField({
+    length: TEXTMESSAGE_LIMIT
+  });
+  const [roomState, setRoomState] = useState<RoomState>(RoomState.Initial);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const connection = OmagolConnection;
+
+  const reportInfo = (message: string) => {
+    const info: ChatMessage = {
+      type: MessageType.Info,
+      user: "Internal",
+      message: message,
+      uuid: ""
+    };
+
+    setMessages(prevList => {
+      return [...prevList, info];
+    });
+  };
+
+  const userConnectedEventHandler = () => {
+    setRoomState(RoomState.Connected);
+    reportInfo("User has connected");
+  }
+
+  const userDisconnectedEventHandler = () => {
+    setRoomState(RoomState.Disconnected);
+    reportInfo("User has Disconnected");
+  }
+
+  const handleEnterEvent: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key === "Enter" && event.shiftKey === false) {
+      handleSendEvent();
+      event.preventDefault();
+    }
+  }
+
+  const handleSendEvent = async () => {
+    if (message && roomState === RoomState.Connected) {
+      const msg: ChatMessage = {
+        user: "You",
+        message: message,
+        uuid: connection.connectionId!
+      };
+
+      await sendMessage(msg);
+      setMessages(prevList => {
+        return [...prevList, msg];
+      });
+      clearMessage();
+    }
+  }
+
+  const handleReceiveEvent = (message: OmagolMessage) => {
+    const msg: ChatMessage = {
+      user: "Stranger",
+      message: message.message,
+      uuid: connection.connectionId!
+    };
+
+    setMessages(prevList => {
+      return [...prevList, msg];
+    });
+  };
+
+  const begin = () => {
+    start();
+    setMessages([]);
+  };
+
+  const nextButtonHandler = () => {
+    stop();
+    begin();
+    setRoomState(RoomState.Waiting);
+  };
+
+  let content = <Loading />
+  switch (roomState) {
+    case RoomState.Initial:
+    case RoomState.Waiting:
+      content = <Loading />
+      break;
+    case RoomState.Connected:
+    case RoomState.Disconnected:
+      content = <ChatArea messageList={messages} />
+      break;
+  }
+
   return (
     <>
       <ThemeProvider theme={OmaTheme}>
@@ -47,10 +158,10 @@ export const OmaVid = () => {
               </Grid>
               <Grid item xs={12} sm={8}>
                 <Box sx={{
-                  backgroundColor: "#2f2f2f",
                   height: "75vh",
                 }}>
                   {/* Chat area here */}
+                  {content}
                 </Box>
               </Grid>
             </Grid>
@@ -64,7 +175,7 @@ export const OmaVid = () => {
               display: "grid",
               placeItems: "center"
             }}>
-              <Button variant="contained">Next</Button>
+              <Button variant="contained" onClick={nextButtonHandler}>Next</Button>
             </Grid>
             <Grid item xs={12} sm={10}>
               <TextField
@@ -73,9 +184,11 @@ export const OmaVid = () => {
                 fullWidth
                 multiline
                 maxRows={2}
+                value={message}
+                onChange={handleMessageChange}
+                onKeyDownCapture={handleEnterEvent}
               />
             </Grid>
-
           </Grid>
           <Grid item xs={0} md={1} />
         </Grid>
