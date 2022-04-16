@@ -58,6 +58,7 @@ public class OmagolRoom : Hub<IOmagol> {
 		string connectionId = Context.ConnectionId;
 
 		User currUser = new User(connectionId, info.Video ? UserType.Video : UserType.Chat);
+		_userStore.Add(connectionId, currUser);
 		await _groupProvider.Register(currUser);
 	}
 

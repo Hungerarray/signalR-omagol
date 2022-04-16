@@ -7,9 +7,12 @@ public class GroupProvider : IGroupProvider {
 
 	private ILogger<GroupProvider> _logger { get; init; }
 
-	private Queue<User> _availableConnections { get; set; } = new Queue<User>();
+	private Queue<User> _availableChatConnections { get; set; } = new Queue<User>();
+	private Queue<User> _availableVideoConnections { get; set; } = new Queue<User>();
 
-	private Dictionary<User, Group> _groupMap { get; } = new Dictionary<User, Group>();
+	private Dictionary<User, Group> _chatGroupMap { get; } = new Dictionary<User, Group>();
+	private Dictionary<User, Group> _videoGroupMap { get; } = new Dictionary<User, Group>();
+
 	private IHubContext<OmagolRoom, IOmagol> _hubContext { get; }
 
 	public GroupProvider(IHubContext<OmagolRoom, IOmagol> hubContext, ILogger<GroupProvider> logger) {
@@ -19,19 +22,38 @@ public class GroupProvider : IGroupProvider {
 
 	public string? this[User user] {
 		get {
-			if (_groupMap.ContainsKey(user))
-				return _groupMap[user].GroupId;
+			if (user.type == UserType.Chat && _chatGroupMap.ContainsKey(user))
+				return _chatGroupMap[user].GroupId;
+			else if (user.type == UserType.Video && _videoGroupMap.ContainsKey(user))
+				return _videoGroupMap[user].GroupId;
 			return null;
 		}
 	}
 
 	public async Task Register(User user) {
-		if (_availableConnections.Count == 0) {
-			_availableConnections.Enqueue(user);
-			return;
+		User availableUser;
+
+		switch (user.type) {
+			case UserType.Chat:
+				if (_availableChatConnections.Count == 0) {
+					_availableChatConnections.Enqueue(user);
+					return;
+				}
+				availableUser = _availableChatConnections.Dequeue();
+				break;
+			case UserType.Video:
+				if (_availableVideoConnections.Count == 0) {
+					_availableVideoConnections.Enqueue(user);
+					return;
+				}
+				availableUser = _availableVideoConnections.Dequeue();
+				break;
+			default:
+				_logger.LogWarning("Possible fallthrough on additional UserType");
+				availableUser = user;
+				break;
 		}
 
-		User availableUser = _availableConnections.Dequeue();
 		User[] users = new[] { user, availableUser };
 		string newGroupId = Guid.NewGuid().ToString();
 
@@ -42,23 +64,59 @@ public class GroupProvider : IGroupProvider {
 
 	private async Task CreateGroup(Group group) {
 		foreach (User usr in group.Users) {
-			_groupMap.Add(usr, group);
+			switch (usr.type) {
+				case UserType.Chat:
+					_chatGroupMap.Add(usr, group);
+					break;
+				case UserType.Video:
+					_videoGroupMap.Add(usr, group);
+					break;
+			}
 			await _hubContext.Groups.AddToGroupAsync(usr.ConnectionId, group.GroupId);
 		}
 	}
 
 	public async Task UnRegister(User user) {
-		_groupMap.TryGetValue(user, out Group? group);
+
+		Group? group = null;
+		switch (user.type) {
+			case UserType.Chat:
+				_chatGroupMap.TryGetValue(user, out group);
+				break;
+			case UserType.Video:
+				_videoGroupMap.TryGetValue(user, out group);
+				break;
+			default:
+				_logger.LogWarning("Fallthrough on switch case of UserType");
+				break;
+		}
+
 		if (group is not null) {
 			foreach (User usr in group.Users) {
-				_groupMap.Remove(usr);
+				switch (usr.type) {
+					case UserType.Chat:
+						_chatGroupMap.Remove(usr);
+						break;
+					case UserType.Video:
+						_videoGroupMap.Remove(usr);
+						break;
+				}
 				await _hubContext.Groups.RemoveFromGroupAsync(usr.ConnectionId, group.GroupId);
 			}
 			return;
 		}
 
-		var filteredQueue = _availableConnections
-													.Where(usr => usr.ConnectionId != user.ConnectionId);
-		_availableConnections = new Queue<User>(filteredQueue);
+		switch (user.type) {
+			case UserType.Chat:
+				var filteredQueue = _availableChatConnections
+														.Where(usr => usr.ConnectionId != user.ConnectionId);
+				_availableChatConnections = new Queue<User>(filteredQueue);
+				break;
+			case UserType.Video:
+				filteredQueue = _availableVideoConnections
+														.Where(usr => usr.ConnectionId != user.ConnectionId);
+				_availableVideoConnections = new Queue<User>(filteredQueue);
+				break;
+		}
 	}
 }
