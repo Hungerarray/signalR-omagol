@@ -19,12 +19,13 @@ import { Loading } from "../components/Loading";
 import { ChatMessage } from "../Infrastrcture/Types";
 import { MessageType } from "../components/Message";
 
-enum RoomState {
+export enum RoomState {
   Initial,
   Waiting,
   Connected,
   Disconnected
 };
+
 
 export const OmaChat = () => {
   const [message, handleMessageChange, clearMessage] = useTextField({
@@ -118,6 +119,7 @@ export const OmaChat = () => {
 
   const nextButtonHandler = () => {
     console.log("Next button Pressed");
+    
     stop();
     begin();
     setRoomState(RoomState.Waiting);

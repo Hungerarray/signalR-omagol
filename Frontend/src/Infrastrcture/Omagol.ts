@@ -14,6 +14,8 @@ export const OmagolConnection = new signalR.HubConnectionBuilder()
 export const setupConnection = async () => {
   if (OmagolConnection.state === HubConnectionState.Disconnected) {
     await OmagolConnection.start();
+  } else if (OmagolConnection.state === HubConnectionState.Disconnecting) {
+    setInterval(setupConnection, 500);
   }
 }
 
