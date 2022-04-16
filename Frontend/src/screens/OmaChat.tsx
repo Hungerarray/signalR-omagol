@@ -98,7 +98,9 @@ export const OmaChat = () => {
   }
   
   const begin = () => {
-    start();
+    start({
+      video: false
+    });
     setMessages([]);
   }
 
