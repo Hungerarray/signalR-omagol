@@ -3,13 +3,13 @@ FROM node:17-alpine AS build-env
 WORKDIR /app
 
 # Copy over files and install modules
-COPY ./package*.json .
-RUN npm install
+COPY ./package*.json ./
+RUN npm ci
 
 ARG VITE_BACKEND
 ENV VITE_BACKEND ${VITE_BACKEND}
 
-COPY . . 
+COPY . ./ 
 RUN npx vite build
 
 # Run environment
