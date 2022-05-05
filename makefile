@@ -1,5 +1,5 @@
 
-BACKEND_FILES := Backend/Dockerfile $(wildcard Backend/*.cs) $(wildcard Backend/**/*.cs)
+BACKEND_FILES := Backend/source/Dockerfile $(wildcard Backend/source/*.cs) $(wildcard Backend/source/**/*.cs)
 FRONTEND_FILES := Frontend/Dockerfile Frontend/vite.config.ts $(wildcard Frontend/src/*.tsx) \
 									$(wildcard Frontend/src/*.css) $(wildcard Frontend/src/*.ts) \
 									$(wildcard Frontend/src/**/*.tsx) $(wildcard Frontend/src/**/*.ts)
@@ -14,10 +14,13 @@ frontend: $(FRONTEND_FILES)
 	touch frontend
 
 backend: $(BACKEND_FILES)
-	docker build -t signalr-omagol_backend ./Backend
+	docker build -t signalr-omagol_backend ./Backend/source
 	touch backend
 
-.PHONY: stop
+.PHONY: stop clean
 
 stop:
 	docker-compose down
+
+clean:
+	rm -f backend frontend
