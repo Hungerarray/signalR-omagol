@@ -94,7 +94,6 @@ public class OmagolRoomTests : OmagolRoomTestsBase {
 
 		// Assert
 		UserStore.Received(1).Add(
-			Arg.Do<string>(x => x.Should().Be(connectionId)),
 			Arg.Do<User>(x => UserComparer(usr, x))
 		);
 		await GroupProvider.Received(1).Register(

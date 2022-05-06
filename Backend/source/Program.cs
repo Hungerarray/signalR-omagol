@@ -1,5 +1,6 @@
 using Omagol.Hubs;
 using Omagol.Infrastructure;
+using Omagol.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddCors(options => {
 });
 builder.Services.AddSingleton<IGroupProvider, GroupProvider>();
 builder.Services.AddSingleton<IUserStore, UserStore>();
+builder.Services.AddSingleton<IDictionary<string, User>>(ServiceProvider => {
+  var type = typeof(Dictionary<string, User>);
+  return (IDictionary<string, User>) Activator.CreateInstance(type)!;
+});
 
 var app = builder.Build();
 

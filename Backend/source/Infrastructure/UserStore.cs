@@ -3,10 +3,11 @@ using Omagol.Infrastructure.Data;
 namespace Omagol.Infrastructure;
 
 public class UserStore : IUserStore {
-	private Dictionary<string, User> _userStore { get; init; }
+	private IDictionary<string, User> _userStore { get; init; }
 
-	public UserStore() {
-		_userStore = new Dictionary<string, User>();
+	public UserStore(IDictionary<string, User> userStore)
+	{
+		_userStore = userStore;
 	}
 
 	public User this[string connectionId] {
@@ -15,8 +16,8 @@ public class UserStore : IUserStore {
 		}
 	}
 
-	public void Add(string connectionId, User user) {
-		_userStore.Add(connectionId, user);
+	public void Add(User user) {
+		_userStore.Add(user.ConnectionId, user);
 	}
 
 	public void Remove(string connectionId) {
