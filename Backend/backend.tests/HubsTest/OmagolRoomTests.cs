@@ -186,7 +186,7 @@ public abstract class OmagolRoomTestsBase {
 	protected void UserComparer(User expected, User actual)
 	{
 		actual.ConnectionId.Should().Be(expected.ConnectionId);
-		actual.type.Should().Be(expected.type);
+		actual.Type.Should().Be(expected.Type);
 	}
 
 }

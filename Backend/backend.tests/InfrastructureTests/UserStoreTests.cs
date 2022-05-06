@@ -30,7 +30,7 @@ public class UserStoreTests : UserStoreTestsBase
 
     // Assert
     usr.ConnectionId.Should().Be(user.ConnectionId);
-    usr.type.Should().Be(user.type);
+    usr.Type.Should().Be(user.Type);
   }
 
   [Theory]
@@ -45,7 +45,7 @@ public class UserStoreTests : UserStoreTestsBase
       Arg.Do<string>(x => x.Should().Be(user.ConnectionId)),
       Arg.Do<User>(x => {
         x.ConnectionId.Should().Be(user.ConnectionId);
-        x.type.Should().Be(user.type);
+        x.Type.Should().Be(user.Type);
       })
     );
   }

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Omagol.Hubs;
 using Omagol.Infrastructure;
 using Omagol.Infrastructure.Data;
@@ -17,10 +18,9 @@ builder.Services.AddCors(options => {
 });
 builder.Services.AddSingleton<IGroupProvider, GroupProvider>();
 builder.Services.AddSingleton<IUserStore, UserStore>();
-builder.Services.AddSingleton<IDictionary<string, User>>(ServiceProvider => {
-  var type = typeof(Dictionary<string, User>);
-  return (IDictionary<string, User>) Activator.CreateInstance(type)!;
-});
+builder.Services.AddSingleton<IStorageProvider, StorageProvider>();
+builder.Services.AddSingleton(typeof(ICollection<>), typeof(ConcurrentQueue<>));
+builder.Services.AddSingleton(typeof(IDictionary<,>), typeof(ConcurrentDictionary<,>));
 
 var app = builder.Build();
 
