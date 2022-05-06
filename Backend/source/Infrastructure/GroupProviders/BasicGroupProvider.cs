@@ -3,22 +3,21 @@ using Omagol.Hubs;
 using Omagol.Infrastructure.Data;
 namespace Omagol.Infrastructure;
 
-public class GroupProvider : IGroupProvider {
-
-	private readonly ILogger<GroupProvider> _logger;
+public class BasicGroupProvider : IGroupProvider {
 
 	private readonly IStorageProvider _storage;
 	private readonly IHubContext<OmagolRoom, IOmagol> _hubContext;
+	private readonly IGroupIdGenerator _generator;
 
-	public GroupProvider(
+	public BasicGroupProvider(
 		IHubContext<OmagolRoom, IOmagol> hubContext,
-		ILogger<GroupProvider> logger,
-		IStorageProvider storage
+		IStorageProvider storage,
+		IGroupIdGenerator generator
 	)
 	{
-		_logger = logger;
 		_hubContext = hubContext;
 		_storage = storage;
+		_generator = generator;
 	}
 
 	public string? this[User user] {
@@ -40,7 +39,7 @@ public class GroupProvider : IGroupProvider {
 		connections.Remove(otherUser);
 
 		Group group = new Group(
-			GroupId: Guid.NewGuid().ToString(),
+			GroupId: _generator.GetId(),
 			Users: new[] { user, otherUser }
 		);
 		await CreateGroup(groups, group);
