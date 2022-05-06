@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using Omagol.Hubs;
 using Omagol.Infrastructure;
+using Omagol.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,19 @@ builder.Services.AddCors(options => {
                             .AllowCredentials();
                     });
 });
-builder.Services.AddSingleton<IGroupProvider, GroupProvider>();
+builder.Services.AddSingleton<IGroupProvider, BasicGroupProvider>();
 builder.Services.AddSingleton<IUserStore, UserStore>();
+builder.Services.AddSingleton<IStorageProvider, StorageProvider>();
+builder.Services.AddTransient<IGroupIdGenerator, GuidGroupIdGenerator>();
+builder.Services.AddSingleton(typeof(ICollection<>), typeof(List<>));
+builder.Services.AddSingleton<IDictionary<User, Group>>(ServiceProvider => {
+  return Activator.CreateInstance<Dictionary<User, Group>>();
+});
+builder.Services.AddSingleton<IDictionary<string, User>>(ServiceProvider => {
+  return Activator.CreateInstance<Dictionary<string, User>>();
+});
+
+IProducerConsumerCollection<string> test = new ConcurrentQueue<string>();
 
 var app = builder.Build();
 

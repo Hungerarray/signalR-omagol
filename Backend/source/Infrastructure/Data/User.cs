@@ -5,4 +5,4 @@ public enum UserType {
   Video
 }
 
-public record User(string ConnectionId, UserType type);
+public record User(string ConnectionId, UserType Type);

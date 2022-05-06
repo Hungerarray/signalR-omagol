@@ -29,16 +29,9 @@ public class OmagolRoom : Hub<IOmagol> {
 		if (exception is not null) {
 			_logger.LogError(exception, $"{Context.ConnectionAborted} disconnected with exception.");
 		}
-		var connectionId = Context.ConnectionId;
-		_logger.LogInformation($"{connectionId} disconnected.");
+		_logger.LogInformation($"{Context.ConnectionId} disconnected.");
 
-		User currUser = _userStore[connectionId];
-		_userStore.Remove(connectionId);
-		string? groupId = _groupProvider[currUser];
-		if (groupId is not null) {
-			await Clients.GroupExcept(groupId, connectionId).UserDisconnected();
-		}
-		await _groupProvider.UnRegister(currUser);
+		await Stop();
 
 		await base.OnDisconnectedAsync(exception);
 	}
@@ -58,7 +51,7 @@ public class OmagolRoom : Hub<IOmagol> {
 		string connectionId = Context.ConnectionId;
 
 		User currUser = new User(connectionId, info.Video ? UserType.Video : UserType.Chat);
-		_userStore.Add(connectionId, currUser);
+		_userStore.Add(currUser);
 		await _groupProvider.Register(currUser);
 	}
 
