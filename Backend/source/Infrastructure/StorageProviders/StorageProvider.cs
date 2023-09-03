@@ -2,14 +2,15 @@ using Omagol.Infrastructure.Data;
 
 namespace Omagol.Infrastructure;
 
-public class StorageProvider : IStorageProvider {
+public class StorageFactory : IStorageFactory
+{
 	private readonly ICollection<User> ChatConnections;
 	private readonly ICollection<User> VideoConnections;
 
 	private readonly IDictionary<User, Group> ChatGroup;
 	private readonly IDictionary<User, Group> VideoGroup;
 
-	public StorageProvider(
+	public StorageFactory(
 		IDictionary<User, Group> videoGroup,
 		IDictionary<User, Group> chatGroup,
 		ICollection<User> chatConnections,

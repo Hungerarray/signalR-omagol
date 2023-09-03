@@ -96,7 +96,7 @@ public class BasicGroupProviderTests : BasicGroupProviderTestsBase {
 		// - create group
 		Generator.GetId().Returns<string>(groupId);
 		Group group = new Group(groupId, new[] {user, otherUser});
-    
+
 		// Act
 		await GroupProvider.Register(user);
 
@@ -109,8 +109,8 @@ public class BasicGroupProviderTests : BasicGroupProviderTestsBase {
 		// - proper group was made
 		Groups.Received(2).Add(
 			Arg.Is<User>(x => UserCompare(x, user)
-																					 || UserCompare(x, otherUser)), 
-			Arg.Do<Group>(x => x.Should().Be(group))																				 
+																					 || UserCompare(x, otherUser)),
+			Arg.Do<Group>(x => x.Should().Be(group))
 		);
 		await HubContext.Groups.Received(2).AddToGroupAsync(
 			Arg.Is<string>(x => x == user.ConnectionId || x == otherUser.ConnectionId),
@@ -120,7 +120,7 @@ public class BasicGroupProviderTests : BasicGroupProviderTestsBase {
   }
 
 	[Theory]
-	[AutoData]		
+	[AutoData]
 	public async Task UnRegister_Removes_From_Connections(User user)
 	{
 		// Arrange
@@ -167,7 +167,7 @@ public class BasicGroupProviderTests : BasicGroupProviderTestsBase {
 }
 
 public abstract class BasicGroupProviderTestsBase {
-	protected IStorageProvider Storage;
+	protected IStorageFactory Storage;
 	protected IHubContext<OmagolRoom, IOmagol> HubContext;
 	protected BasicGroupProvider GroupProvider;
   protected ICollection<User> Connections;
@@ -179,7 +179,7 @@ public abstract class BasicGroupProviderTestsBase {
 
 	protected BasicGroupProviderTestsBase()
 	{
-		Storage = Substitute.For<IStorageProvider>();
+		Storage = Substitute.For<IStorageFactory>();
 		HubContext = Substitute.For<IHubContext<OmagolRoom, IOmagol>>();
     Connections = Substitute.For<ICollection<User>>();
     Groups = Substitute.For<IDictionary<User, Group>>();
@@ -193,7 +193,7 @@ public abstract class BasicGroupProviderTestsBase {
 		fixture = new Fixture();
 	}
 
-	protected bool UserCompare(User lhs, User rhs) 
+	protected bool UserCompare(User lhs, User rhs)
 	{
 		return lhs.ConnectionId == rhs.ConnectionId && lhs.Type == rhs.Type;
 	}
