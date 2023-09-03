@@ -10,7 +10,7 @@ sequenceDiagram
   participant c2 as Client 2
   c1 -->> b : Connected(implicit)
   c2 -->> b : Connected(implicit)
-  c1 ->> b : Start 
+  c1 ->> b : Start
   c2 ->> b : Start
   par Backend to Client 1
     b ->> c1 : UserConnected
@@ -19,11 +19,11 @@ sequenceDiagram
   end
   rect rgb(49, 18, 98, 0.5)
     c1 -->> b : MessageSend
-    b -->> c2 : MessageReceive 
+    b -->> c2 : MessageReceive
     c2 -->> b : MessageSend
     c2 -->> b : MessageSend
-    b -->> c1 : MessageReceive 
-    b -->> c1 : MessageReceive 
+    b -->> c1 : MessageReceive
+    b -->> c1 : MessageReceive
   end
   c2 -->> b : Disconnect(implicit)
   b ->> c1 : UserDisconnected
@@ -38,7 +38,7 @@ Endpoint has events for when client is connected with other person or if the oth
 > NOTE: unless `UserConnected` event is sent any message sent will be ignored.
 
 This endpoint has a chat event api, and video event api.
-Within Chat event api, we have 
+Within Chat event api, we have
 - `MessageSend` [Invoke]
 - `MessageReceive` [Subscribe]
 
@@ -75,8 +75,9 @@ In case the person you are connected to disconnects, you are sent `UserDisconnec
 The following is the structure of strongly typed Omagol hub class as required by signalR. We have a group provider that is responsible for assigning group to the registered users.
 
 ```mermaid
-classDiagram 
-  direction RL
+classDiagram
+direction_tb
+
   class IOmagol {
     <<interface>>
     + MessageReceive(Message message)
@@ -91,8 +92,8 @@ classDiagram
     + Stop()
     + MessageSend(Message message)
   }
-  
-  
+
+
   class IGroupProvider {
     <<interface>>
     + Register(User user)
@@ -100,51 +101,55 @@ classDiagram
     + event UsersConnected(object _, Group group)
   }
 
+
+  class IUserStore {
+    <<interface>>
+    + operator[string connectionId] -> User
+    + Add(string connectionId, User user)
+    + Remove(string connectionId)
+  }
+
+
+ class UserStore {
+    - Dictionary<string, User> _userStore
+    + operator[string connectionId] -> User
+    + Add(string connectionId, User user)
+    + Remove(string connectionId)
+  }
+
+  class Group {
+    + string GroupId
+    + IEnumerable<User> Users
+  }
+
+  class User {
+    + string ConnectionId
+  }
+
+  class UserInfo {
+    + bool video
+  }
+
+  class Message {
+    + string Message
+  }
+
   class BasicGroupProvider {
-    - Queue~User~ _availableConnections
-    - Dictionary~User, Group~ _groupMap
+    - Queue<User> _availableConnections
+    - Dictionary<User, Group> _groupMap
     + operator[User user]
     + Register(User user)
     + UnRegister(User user)
     + event UsersConnected(object _, Group group)
   }
 
-  class IUserStore {
-    <<interface>>
-    +operator[string connectionId] -> User
-    +Add(string connectionId, User user)
-    +Remove(string connectionId)
-  }
+BasicGroupProvider .. IGroupProvider
+UserStore .. IUserStore
+Omagol .. IOmagol
+Omagol o-- IGroupProvider
+Omagol o-- IUserStore
 
-  class UserStore {
-    - Dictionary<string, User> _userStore
-    +operator[string connectionId] -> User
-    +Add(string connectionId, User user)
-    +Remove(string connectionId)
-  }
 
-  class Group {
-    + string GroupId
-    + IEnumerable~User~ Users
-  }
-  
-  class User {
-    +string ConnectionId
-  }
-  
-  class UserInfo {
-    + bool video
-  }
-
-  class Message {
-    +string Message
-  }
-
-  BasicGroupProvider .. IGroupProvider
-  UserStore .. IUserStore
-  Omagol .. IOmagol
-  Omagol o-- IGroupProvider
-  Omagol o-- IUserStore 
 
 ```
 

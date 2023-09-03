@@ -21,7 +21,7 @@ export const chatMoqData2 = [
     "uuid": "124",
     "user": "Regmi C. Mahesh",
     "message": "hait"
-  }, 
+  },
 ]
 
 export const ChatRoomConnection = new signalR.HubConnectionBuilder()
